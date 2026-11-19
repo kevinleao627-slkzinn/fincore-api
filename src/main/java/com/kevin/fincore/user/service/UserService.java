@@ -1,13 +1,15 @@
 package com.kevin.fincore.user.service;
 
+import com.kevin.fincore.user.dto.CreateUserRequest;
+import com.kevin.fincore.user.dto.UserResponse;
 import com.kevin.fincore.user.entity.User;
 import com.kevin.fincore.user.repository.UserRepository;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Locale;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -15,36 +17,50 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService( UserRepository userRepository, PasswordEncoder passwordEncoder)
-        {this.userRepository = userRepository; this.passwordEncoder = passwordEncoder;}
-
-    public User createUser(User user) {
-
-        String normalizedEmail = user.getEmail().trim().toLowerCase(Locale.ROOT);
-
-        // Verifica se o e-mail já está cadastrado
-        if (userRepository.existsByEmail(normalizedEmail)) {
-            throw new IllegalArgumentException("Já existe um usuário cadastrado com este e-mail.");
-        }
-
-        // Normaliza os dados recebidos
-        user.setName(user.getName().trim());
-        user.setEmail(normalizedEmail);
-
-        // Criptografa a senha antes de salvar
-        user.setPasswordHash(
-                passwordEncoder.encode(user.getPasswordHash())
-        );
-
-        return userRepository.save(user);
+    public UserService(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder
+    ) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public Optional<User> getUserByEmail(String email) {
+    @Transactional
+    public UserResponse createUser(CreateUserRequest request) {
 
-        String normalizedEmail = email
-                .trim()
-                .toLowerCase(Locale.ROOT);
+        String email = normalizeEmail(request.email());
 
-        return userRepository.findByEmail(normalizedEmail);
+        validateEmailAvailability(email);
+
+        User user = buildUser(request, email);
+
+        User savedUser = userRepository.save(user);
+
+        return UserResponse.fromEntity(savedUser);
+    }
+
+    private String normalizeEmail(String email) {
+        return email.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private void validateEmailAvailability(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException(
+                    "Já existe um usuário cadastrado com este e-mail."
+            );
+        }
+    }
+
+    private User buildUser(CreateUserRequest request, String email) {
+
+        User user = new User();
+
+        user.setName(request.name().trim());
+        user.setEmail(email);
+        user.setPasswordHash(
+                passwordEncoder.encode(request.password())
+        );
+
+        return user;
     }
 }
