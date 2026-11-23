@@ -4,6 +4,7 @@ import com.kevin.fincore.user.dto.CreateUserRequest;
 import com.kevin.fincore.user.dto.UserResponse;
 import com.kevin.fincore.user.entity.User;
 import com.kevin.fincore.user.repository.UserRepository;
+import com.kevin.fincore.common.exception.EmailRegisteredException;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,8 +46,8 @@ public class UserService {
 
     private void validateEmailAvailability(String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException(
-                    "Já existe um usuário cadastrado com este e-mail."
+           throw new EmailRegisteredException(
+            "Já existe um usuário cadastrado com este e-mail."
             );
         }
     }
