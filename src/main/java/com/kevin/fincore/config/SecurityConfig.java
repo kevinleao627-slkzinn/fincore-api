@@ -21,13 +21,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) // Bean que configura a cadeia de filtros de segurança para a aplicação
             throws Exception {
 
-            http.csrf(csrf -> csrf.disable()).sessionManagement(session ->
+            http.csrf(csrf -> csrf.disable()).sessionManagement(session -> // Desativa a proteção CSRF (Cross-Site Request Forgery) e configura o gerenciamento de sessão para a aplicação
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS
                         )
                 )
-                .authorizeHttpRequests(auth -> auth
+                .authorizeHttpRequests(auth -> auth // Configura as regras de autorização para diferentes endpoints da aplicação
                         .requestMatchers("/api/users").permitAll()
+                        .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
                         .anyRequest().authenticated()
                 );

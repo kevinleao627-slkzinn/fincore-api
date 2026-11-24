@@ -1,5 +1,7 @@
 package com.kevin.fincore.auth.dto;
 
-public class LoginResponse {
-    
-}
+public record LoginResponse(
+    String acessToken,
+    String tokenType,
+    long expiresIn
+) {}
