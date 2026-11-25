@@ -6,6 +6,8 @@ import com.kevin.fincore.common.exception.InvalidCredentialsException;
 import com.kevin.fincore.security.JwtService;
 import com.kevin.fincore.user.entity.User;
 import com.kevin.fincore.user.repository.UserRepository;
+import com.kevin.fincore.common.exception.UserNotFoundException;
+import com.kevin.fincore.user.dto.UserResponse;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service; // Indica que a classe é um comp
 import org.springframework.transaction.annotation.Transactional; // Permite gerenciar transações de banco de dados, garantindo que as operações sejam executadas de forma atômica e consistente.
 
 import java.util.Locale; // Permite a manipulação de informações relacionadas a idiomas e regiões, como formatação de datas, números e strings, garantindo que o comportamento seja consistente com as convenções locais.
+import java.util.UUID;
 
 @Service
 public class AuthService { // Responsável por gerenciar a autenticação de usuários, incluindo o processo de login e a geração de tokens JWT.
@@ -61,4 +64,17 @@ public class AuthService { // Responsável por gerenciar a autenticação de usu
                 expiration / 1000
         );
     }
+        @Transactional(readOnly = true)
+        public UserResponse getMyProfile(UUID userId) {
+
+                User user = userRepository.findById(userId)
+                        .orElseThrow(UserNotFoundException::new);
+
+        return new UserResponse(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getCreatedAt()
+         );
+        }
 }

@@ -5,12 +5,14 @@ import com.kevin.fincore.user.dto.UserResponse;
 import com.kevin.fincore.user.entity.User;
 import com.kevin.fincore.user.repository.UserRepository;
 import com.kevin.fincore.common.exception.EmailRegisteredException;
+import com.kevin.fincore.common.exception.UserNotFoundException;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Locale;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -38,6 +40,19 @@ public class UserService {
         User savedUser = userRepository.save(user);
 
         return UserResponse.fromEntity(savedUser);
+    }
+    @Transactional(readOnly = true)
+    public UserResponse getMyProfile(UUID userId) {
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(UserNotFoundException::new);
+
+        return new UserResponse(
+            user.getId(),
+            user.getName(),
+            user.getEmail(),
+            user.getCreatedAt()
+        );
     }
 
     private String normalizeEmail(String email) {

@@ -97,6 +97,17 @@ public class GlobalExceptionHandler {
                         request.getRequestURI()
         );
 }
+        @ExceptionHandler(UserNotFoundException.class)
+        public ResponseEntity<Map<String, Object>> handleUserNotFound(
+                UserNotFoundException exception,
+                HttpServletRequest request) {
+
+                return buildResponse(
+                        HttpStatus.NOT_FOUND,
+                        exception.getMessage(),
+                        request.getRequestURI()
+        );
+}
 
     private ResponseEntity<Map<String, Object>> buildResponse(
             HttpStatus status,
