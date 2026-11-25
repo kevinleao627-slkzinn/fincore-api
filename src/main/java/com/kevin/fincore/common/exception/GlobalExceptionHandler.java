@@ -1,5 +1,7 @@
 package com.kevin.fincore.common.exception;
 
+import com.kevin.fincore.account.exception.AccountNotFoundException;
+
 import jakarta.servlet.http.HttpServletRequest; // Reponsavavel por acessar os dados da requisição, como o caminho da URL e os parâmetros de consulta.
 
 import org.slf4j.Logger; // Reponsavavel por registrar mensagens de log para depuração e monitoramento.
@@ -107,6 +109,17 @@ public class GlobalExceptionHandler {
                         exception.getMessage(),
                         request.getRequestURI()
         );
+}
+        @ExceptionHandler(AccountNotFoundException.class)
+        public ResponseEntity<Map<String, Object>> handleAccountNotFound(
+                AccountNotFoundException exception,
+                HttpServletRequest request) {
+
+                return buildResponse(
+                        HttpStatus.NOT_FOUND,
+                        exception.getMessage(),
+                        request.getRequestURI()
+    );
 }
 
     private ResponseEntity<Map<String, Object>> buildResponse(

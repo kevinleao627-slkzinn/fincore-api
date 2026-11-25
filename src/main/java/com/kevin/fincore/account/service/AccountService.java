@@ -5,6 +5,7 @@ import com.kevin.fincore.account.repository.AccountRepository;
 import com.kevin.fincore.user.entity.User;
 import com.kevin.fincore.user.repository.UserRepository;
 import com.kevin.fincore.common.exception.UserNotFoundException;
+import com.kevin.fincore.account.exception.AccountNotFoundException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,5 +42,12 @@ public class AccountService { // Responsavel por criar e listar contas de usuár
     public List<Account> getMyAccounts(UUID userId) { // Responsável por recuperar todas as contas associadas a um usuário específico, identificado pelo seu ID. Retorna uma lista de contas do usuário.
         return accountRepository.findAllByUserId(userId);
     }
+    @Transactional(readOnly = true)
+    public Account getMyAccount(UUID accountId, UUID userId) {
+
+        return accountRepository
+            .findByIdAndUserId(accountId, userId)
+            .orElseThrow(AccountNotFoundException::new);
+}
 }
 

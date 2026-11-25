@@ -46,4 +46,15 @@ public class AccountController {
 
         return ResponseEntity.ok(accounts);
     }
+    @GetMapping("/{id}")
+    public ResponseEntity<AccountResponse> getMyAccount(
+        @PathVariable UUID id,
+        @AuthenticationPrincipal Jwt jwt) {
+
+        UUID userId = UUID.fromString(jwt.getSubject());
+
+        Account account = accountService.getMyAccount(id, userId);
+
+        return ResponseEntity.ok(AccountResponse.fromEntity(account));
+}
 }
