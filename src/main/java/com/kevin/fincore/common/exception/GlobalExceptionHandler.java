@@ -121,6 +121,17 @@ public class GlobalExceptionHandler {
                         request.getRequestURI()
     );
 }
+        @ExceptionHandler(IllegalArgumentException.class)
+        public ResponseEntity<Map<String, Object>> handleIllegalArgument(
+                IllegalArgumentException exception,
+                HttpServletRequest request) {
+
+                return buildResponse(
+                        HttpStatus.BAD_REQUEST,
+                        exception.getMessage(),
+                        request.getRequestURI()
+        );
+}
 
     private ResponseEntity<Map<String, Object>> buildResponse(
             HttpStatus status,

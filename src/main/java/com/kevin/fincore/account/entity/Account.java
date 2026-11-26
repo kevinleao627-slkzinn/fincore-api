@@ -70,5 +70,13 @@ public class Account {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+
+    public void debit(BigDecimal amount) {
+        this.balance = this.balance.subtract(amount);
+    }
+
+    public void credit(BigDecimal amount) {
+        this.balance = this.balance.add(amount);
+    }
 }
 
