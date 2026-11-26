@@ -42,6 +42,12 @@ public class TransactionService {
             );
         }
 
+        if (request.amount() == null || request.amount().signum() <= 0) {
+            throw new IllegalArgumentException(
+                 "O valor da transferência deve ser maior que zero."
+            );
+        }
+
         // Bloqueia as contas sempre na mesma ordem para reduzir deadlocks.
         UUID firstId = sourceId.compareTo(destinationId) < 0
                 ? sourceId : destinationId;
